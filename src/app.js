@@ -1,6 +1,8 @@
 import express from 'express'
 
 const app = express()
+app.use(express.json()) //a built-in middleware to convert the responses to json format to understand.
+
 
 
 /* -------------------- Global Error Handler -------------------- */
