@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,  //even though we get that automatically but we might access it sometime so it will be easy.
     username: {
       type: String,
       required: true, //and username will be compulsory
@@ -20,9 +19,13 @@ const userSchema = new mongoose.Schema({
       select: false,  // Prevent password from being included in query results by default for security
 
     },
-      avatar: {
+    avatarUrl: {
       type: String,
-      default: "https://www.freepik.com/free-vector/man-drinking-coffee-reusable-pot-character_88416298.htm#fromView=search&page=1&position=2&uuid=b0619a0c-2d7c-4b18-8088-a8ba377e3689&query=person+illustration",
+      required: true,
+    },
+    avatarId: {
+      type: String,
+      required: true,
     },
 
     //if the user creates a channel
