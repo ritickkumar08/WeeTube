@@ -25,12 +25,13 @@ const userSchema = new mongoose.Schema({
       default: "https://www.freepik.com/free-vector/man-drinking-coffee-reusable-pot-character_88416298.htm#fromView=search&page=1&position=2&uuid=b0619a0c-2d7c-4b18-8088-a8ba377e3689&query=person+illustration",
     },
 
+    //if the user creates a channel
     channel: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Channel", // Reference to the user's own channel
       default: null,
     },
-     // Subscribed channels
+    // Subscribed channels
     subscribedChannels: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -77,5 +78,5 @@ const userSchema = new mongoose.Schema({
   { timestamps: true }
 );
 
-  
+export default mongoose.model('User', userSchema)
 
