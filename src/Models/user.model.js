@@ -17,7 +17,6 @@ const userSchema = new mongoose.Schema({
       type: String,
       required: true,
       select: false,  // Prevent password from being included in query results by default for security
-
     },
     avatarUrl: {
       type: String,
@@ -57,7 +56,7 @@ const userSchema = new mongoose.Schema({
     ],
 
     //watch later
-     watchLater: [
+    watchLater: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Video", // List of videos saved for later viewing

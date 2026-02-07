@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt'
+import fs from 'fs'
 
 import User from '../Models/user.model.js'
 import { v2 as cloudinary } from 'cloudinary'
@@ -19,12 +20,21 @@ const signupController = async (req, res) => {
         if(!password || !email || !username){
             return res.status(400).json({message : 'all fileds are required!'})
         }
+
+        //checking for the picture if it is present.
+        if (!req.files || !req.files.avatar) {
+            return res.status(400).json({ message: "Avatar image is required" });
+        }
         
+        //so that same emails with just a chnage in uppercase and lowercase don't arrive to database, or may be chaos
+        const normalizedEmail = email.toLowerCase().trim();
+        const normalizedUsername = username.trim();
+
         //validating the email structure
         const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
         //if the given email doesn't follow the structure 
-        if (!validEmail.test(email)) {
+        if (!validEmail.test(normalizedEmail)) {
             return res.status(400).json({message: "Email format is not valid"});
         }
 
@@ -44,7 +54,7 @@ const signupController = async (req, res) => {
         }
 
         //check if the user already exists then they can't register.
-        const existingUser = await User.findOne({email})
+        const existingUser = await User.findOne({ email: normalizedEmail })
 
         //if user exists return immediately.
         if(existingUser){
@@ -56,15 +66,17 @@ const signupController = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10)
 
         //uploading the picture
-        const uploadedImage = await cloudinary.uploader.upload(req.files.avatar.tempFilePath)
-        console.log(uploadedImage);
+        const uploadedImage = await cloudinary.uploader.upload(req.files.avatar.tempFilePath, { folder: "weetube/avatars" })
+        // console.log(uploadedImage);
         
+        fs.unlinkSync(req.files.avatar.tempFilePath);
 
         //create a new user documnet in our database
         await User.create({
-            avatar: uploadedImage,
-            username,
-            email,
+            avatarUrl: uploadedImage.secure_url,
+            avatarId: uploadedImage.public_id,
+            username: normalizedUsername,
+            email: normalizedEmail,
             password: hashedPassword,
         });
 
