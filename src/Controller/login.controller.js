@@ -15,8 +15,7 @@ const loginController = async (req, res) => {
 
         //so that same emails with just a chnage in uppercase and lowercase don't arrive to database, or may be chaos
         const normalizedEmail = email.toLowerCase().trim();
-        const normalizedPassword = password.trim();
-
+    
         //finding the user and explicity sending the password
         const user = await User.findOne({ email: normalizedEmail }).select('+password')
 
@@ -60,7 +59,7 @@ const loginController = async (req, res) => {
 
     } catch (err) {
         //a over all catch for all and any errors we get during try block.
-        console.log(err);
+        console.log("Login error:", err);
         res.status(500).json({error: err})
     }
 }
