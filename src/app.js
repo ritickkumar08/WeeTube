@@ -6,6 +6,7 @@ import express from 'express'
 import fileUpload from "express-fileupload";
 
 import userRoutes from './Routes/user.routes.js'
+import videoRouter from './Routes/video.route.js'
 
 const app = express()
 app.use(express.json()) //a built-in middleware to convert the responses to json format to understand.
@@ -18,6 +19,7 @@ app.use(fileUpload({
 );
 
 app.use('/user',userRoutes)
+app.use('/video',videoRouter)
 
 
 /* -------------------- Global Error Handler -------------------- */

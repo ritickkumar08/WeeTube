@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-    username: {
+    // _id: mongoose.Schema.Types.ObjectId,
+    channelName: {
       type: String,
       required: true, //and username will be compulsory
       trim: true,  // Remove whitespace from both ends of the name string
@@ -15,25 +16,27 @@ const userSchema = new mongoose.Schema({
       lowercase: true, // Convert email to lowercase and remove whitespace for consistency
       trim: true, 
     },
+    phone:{
+      type: String,
+      minlength: 10,
+      maxlength: 10
+    },
     password: {
       type: String,
       required: true,
       select: false,  // Prevent password from being included in query results by default for security
     },
-    avatarUrl: {
+    logoUrl: {
       type: String,
       required: true,
     },
-    avatarId: {
+    logoId: {
       type: String,
       required: true,
     },
-
-    //if the user creates a channel
-    channel: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Channel", // Reference to the user's own channel
-      default: null,
+    subscribers:{
+      type: Number,
+      default: 0
     },
     // Subscribed channels
     subscribedChannels: [

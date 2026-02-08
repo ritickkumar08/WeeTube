@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 const videoSchema = new mongoose.Schema({
     title:{
         type: String,
@@ -11,6 +10,10 @@ const videoSchema = new mongoose.Schema({
         type: String,
         required: true,
         default: ""
+    },
+    userId:{
+        type: String,
+        required: true
     },
     videoUrl:{
         type: String,
@@ -46,16 +49,24 @@ const videoSchema = new mongoose.Schema({
       type: Number,
       default: 0,
     },
-    channel: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Channel", // The channel this video belongs to
-      required: true,
-    },
-    uploader: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // The user who uploaded the video
-      required: true,
-    },
+    likedBy:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    dislikedBy:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    // channel: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Channel", // The channel this video belongs to
+    //   required: true,
+    // },
+    // uploader: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "User", // The user who uploaded the video
+    //   required: true,
+    // },
     },
     {timestamps: true}
 )

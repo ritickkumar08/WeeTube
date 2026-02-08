@@ -1,9 +1,8 @@
 import bcrypt from 'bcrypt'
 import fs from 'fs'
-
 import User from '../Models/user.model.js'
-import { v2 as cloudinary } from 'cloudinary'
 
+import { v2 as cloudinary } from 'cloudinary'
 
 cloudinary.config({ 
     cloud_name : 'ds30udzxa', 
@@ -14,21 +13,21 @@ cloudinary.config({
 const signupController = async (req, res) => {
     try {
         //getting the data from the request body to process further
-        const {username, email, password} = req.body
+        const {channelName, email, password, phone} = req.body
 
         //validateing the fields that are needed
-        if(!password || !email || !username){
+        if(!channelName || !email || !password){
             return res.status(400).json({message : 'all fileds are required!'})
         }
 
         //checking for the picture if it is present.
-        if (!req.files || !req.files.avatar) {
-            return res.status(400).json({ message: "Avatar image is required" });
+        if (!req.files || !req.files.logo) {
+            return res.status(400).json({ message: "logo image is required" });
         }
         
         //so that same emails with just a chnage in uppercase and lowercase don't arrive to database, or may be chaos
         const normalizedEmail = email.toLowerCase().trim();
-        const normalizedUsername = username.trim();
+        const normalizedChannelName = channelName.trim();
 
         //validating the email structure
         const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -47,7 +46,7 @@ const signupController = async (req, res) => {
         const validPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/
 
         // Reject weak passwords to reduce brute-force and credential stuffing risks
-        if(!validPassword.test(password)){
+        if(!validPassword.test(password.trim())){
             return res.status(400).json(
                 {message: 'choose a strong passwor the password must have 8 characters, one upper and lower case letter, a number, and atleast one special character'}
             )
@@ -61,22 +60,29 @@ const signupController = async (req, res) => {
             return res.status(400).json({message: 'user already exists'})
         }
 
+        // Check if channelName exists (if unique in schema)
+        const existingChannel = await User.findOne({ channelName: normalizedChannelName });
+        if (existingChannel) {
+        return res.status(400).json({ message: 'Channel name is already taken' });
+        }
+
         //hashing the password using bcrypt
         // 10 salt rounds is a reasonable balance between security and performance
         const hashedPassword = await bcrypt.hash(password, 10)
 
         //uploading the picture
-        const uploadedImage = await cloudinary.uploader.upload(req.files.avatar.tempFilePath, { folder: "weetube/avatars" })
+        const uploadedImage = await cloudinary.uploader.upload(req.files.logo.tempFilePath, { folder: "weetube/logo" })
         // console.log(uploadedImage);
         
-        fs.unlinkSync(req.files.avatar.tempFilePath);
+        fs.unlinkSync(req.files.logo.tempFilePath);
 
         //create a new user documnet in our database
         await User.create({
-            avatarUrl: uploadedImage.secure_url,
-            avatarId: uploadedImage.public_id,
-            username: normalizedUsername,
+            logoUrl: uploadedImage.secure_url,
+            logoId: uploadedImage.public_id,
+            channelName: normalizedChannelName,
             email: normalizedEmail,
+            phone: phone,
             password: hashedPassword,
         });
 

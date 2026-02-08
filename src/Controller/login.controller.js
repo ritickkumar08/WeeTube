@@ -18,29 +18,38 @@ const loginController = async (req, res) => {
     
         //finding the user and explicity sending the password
         const user = await User.findOne({ email: normalizedEmail }).select('+password')
+        console.log(user);
+        
 
         //we do NOT reveal which field was wrong
         if(!user){
-            return res.status(401).json({message : 'invalid credentials'})
+            return res.status(401).json({message : 'Invalid credentials'})
         }
 
         // Compare the provided password with the stored hashed password using bcrypt
         const isValidPassword = await bcrypt.compare(password, user.password)
 
         if(!isValidPassword){
-            return res.status(401).json({message : 'invalid credentials'})
+            return res.status(401).json({message : 'Invalid credentials'})
         }
         //we clear the password immediately.
         user.password = undefined;
 
+        if (!process.env.SECRET_KEY) {
+            console.error("JWT secret key is missing!");
+            return res.status(500).json({ message: "Server configuration error" });
+        }
+
         //now creating the token including 
         const token = jwt.sign(
-            {
-                id: user._id,
-                hasChannel: !!user.channel
+            {   id: user._id, 
+                channelName: user.channelName,
+                email: user.email,
+                phone: user.phone,
+                logoId: user.logoId
             },
             process.env.SECRET_KEY,
-            {expiresIn : '1d'}
+            { expiresIn : '10d' }
         )
 
         //sending a response after everything is processed.
@@ -49,11 +58,13 @@ const loginController = async (req, res) => {
             token,
             user:{
                 user: user._id,
-                username: user.username,
+                channelName: user.channelName,
                 email: user.email,
-                avatarUrl: user.avatarUrl,
-                avatarId: user.avatarId,
-                hasChannel: !!user.channel,
+                phone: user.phone,
+                logoUrl: user.logoUrl,
+                logoId: user.logoId,
+                subscribers: user.subscribers,
+                subscribedChannels: user.subscribedChannels
             }
         })
 
