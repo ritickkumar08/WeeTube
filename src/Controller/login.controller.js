@@ -18,8 +18,7 @@ const loginController = async (req, res) => {
     
         //finding the user and explicity sending the password
         const user = await User.findOne({ email: normalizedEmail }).select('+password')
-        console.log(user);
-        
+        // console.log(user);
 
         //we do NOT reveal which field was wrong
         if(!user){

@@ -11,8 +11,9 @@ const videoSchema = new mongoose.Schema({
         required: true,
         default: ""
     },
-    userId:{
-        type: String,
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
         required: true
     },
     videoUrl:{

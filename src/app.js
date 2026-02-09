@@ -8,6 +8,8 @@ import fileUpload from "express-fileupload";
 import userRoutes from './Routes/user.routes.js'
 import videoRouter from './Routes/video.route.js'
 
+import dotenv from 'dotenv'
+dotenv.config() //to configure the data in .env file to whole of the server or app.
 const app = express()
 app.use(express.json()) //a built-in middleware to convert the responses to json format to understand.
 // file upload middleware
