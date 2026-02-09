@@ -13,10 +13,10 @@ cloudinary.config({
 const signupController = async (req, res) => {
     try {
         //getting the data from the request body to process further
-        const {channelName, email, password, phone} = req.body
+        const {userName, channelName, email, password, phone} = req.body
 
         //validateing the fields that are needed
-        if(!channelName || !email || !password){
+        if(!userName || !channelName || !email || !password){
             return res.status(400).json({message : 'all fileds are required!'})
         }
 
@@ -28,6 +28,7 @@ const signupController = async (req, res) => {
         //so that same emails with just a chnage in uppercase and lowercase don't arrive to database, or may be chaos
         const normalizedEmail = email.toLowerCase().trim();
         const normalizedChannelName = channelName.trim();
+        const normalizedUserName = userName.trim()
 
         //validating the email structure
         const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -81,6 +82,7 @@ const signupController = async (req, res) => {
             logoUrl: uploadedImage.secure_url,
             logoId: uploadedImage.public_id,
             channelName: normalizedChannelName,
+            userName: normalizedUserName,
             email: normalizedEmail,
             phone: phone,
             password: hashedPassword,

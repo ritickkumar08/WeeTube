@@ -2,6 +2,13 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
     // _id: mongoose.Schema.Types.ObjectId,
+    userName:{
+      type: String,
+      // required: true, //and username will be compulsory
+      trim: true,
+      maxlength: 30,
+      default: ""
+    },
     channelName: {
       type: String,
       required: true, //and username will be compulsory
@@ -38,25 +45,32 @@ const userSchema = new mongoose.Schema({
       type: Number,
       default: 0
     },
+    subscribedBy:[{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", // List of channels the user has subscribed to
+      default: []
+    }],
     // Subscribed channels
     subscribedChannels: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Channel", // List of channels the user has subscribed to
+        ref: "User", // List of channels the user has subscribed to
+        default: []
       },
     ],
-
     // Liked videos
     likedVideos: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Video", // List of videos the user has liked
+        default: []
       },
     ],
     dislikedVideos: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Video", // List of videos the user has disliked
+        default: []
       },
     ],
 
@@ -65,6 +79,7 @@ const userSchema = new mongoose.Schema({
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Video", // List of videos saved for later viewing
+        default: []
       },
     ],
 
@@ -79,6 +94,7 @@ const userSchema = new mongoose.Schema({
           type: Date,
           default: Date.now,
         },
+        default: []
       },
     ],
   },
