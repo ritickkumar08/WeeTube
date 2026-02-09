@@ -7,6 +7,7 @@ import fileUpload from "express-fileupload";
 
 import userRoutes from './Routes/user.routes.js'
 import videoRouter from './Routes/video.route.js'
+import commentRouter from './Routes/comment.route.js'
 
 import dotenv from 'dotenv'
 dotenv.config() //to configure the data in .env file to whole of the server or app.
@@ -20,8 +21,9 @@ app.use(fileUpload({
   })
 );
 
-app.use('/user',userRoutes)
-app.use('/video',videoRouter)
+app.use('/user', userRoutes)
+app.use('/video', videoRouter)
+app.use('/comment', commentRouter)
 
 
 /* -------------------- Global Error Handler -------------------- */
