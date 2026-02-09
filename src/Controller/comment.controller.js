@@ -40,5 +40,28 @@ export const addComment = async (req, res) => {
 }
 
 export const allComments = async (req,res) => {
-    
+    try {
+        // Extract video ID from route parameters
+        const videoId = req.params.id;
+
+        // Ensure the video exists before fetching comments
+        const videoExists = await Video.findById(videoId);
+            if (!videoExists) {
+            return res.status(404).json({ message: "Video not found" });
+        }
+
+        // Fetch comments related to the video
+        const comments = await Comment.find({ videoId })
+        // Populate limited user info for each comment
+        .populate("userId", "channelName logoUrl")
+        // Sort comments by newest first
+        .sort({ createdAt: -1 });
+        
+        // Send comments list to client
+        res.status(200).json({ totalComments: comments.length, commentList: comments, });
+    } catch (err) {
+        console.log(err);
+        //clean error response to client
+        return res.status(500).json({error:err, message: 'unable to load comments'})
+    }
 }
