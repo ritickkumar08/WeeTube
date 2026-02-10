@@ -1,33 +1,18 @@
 import bcrypt from 'bcrypt'
-import fs from 'fs'
 import User from '../Models/user.model.js'
-
-import { v2 as cloudinary } from 'cloudinary'
-
-cloudinary.config({ 
-    cloud_name : 'ds30udzxa', 
-    api_key : '243467972227774', 
-    api_secret : 'DX0_uVr0JZvtoJtFXessz3LhzZE' // Click 'View API Keys' above to copy your API secret
-});
 
 const signupController = async (req, res) => {
     try {
         //getting the data from the request body to process further
-        const {userName, channelName, email, password, phone} = req.body
+        const {userName, email, password} = req.body
 
         //validateing the fields that are needed
-        if(!userName || !channelName || !email || !password){
+        if(!userName || !email || !password){
             return res.status(400).json({message : 'all fileds are required!'})
-        }
-
-        //checking for the picture if it is present.
-        if (!req.files || !req.files.logo) {
-            return res.status(400).json({ message: "logo image is required" });
         }
         
         //so that same emails with just a chnage in uppercase and lowercase don't arrive to database, or may be chaos
         const normalizedEmail = email.toLowerCase().trim();
-        const normalizedChannelName = channelName.trim();
         const normalizedUserName = userName.trim()
 
         //validating the email structure
@@ -61,30 +46,14 @@ const signupController = async (req, res) => {
             return res.status(400).json({message: 'user already exists'})
         }
 
-        // Check if channelName exists (if unique in schema)
-        const existingChannel = await User.findOne({ channelName: normalizedChannelName });
-        if (existingChannel) {
-        return res.status(400).json({ message: 'Channel name is already taken' });
-        }
-
         //hashing the password using bcrypt
         // 10 salt rounds is a reasonable balance between security and performance
         const hashedPassword = await bcrypt.hash(password, 10)
 
-        //uploading the picture
-        const uploadedImage = await cloudinary.uploader.upload(req.files.logo.tempFilePath, { folder: "weetube/logo" })
-        // console.log(uploadedImage);
-        
-        fs.unlinkSync(req.files.logo.tempFilePath);
-
         //create a new user documnet in our database
         await User.create({
-            logoUrl: uploadedImage.secure_url,
-            logoId: uploadedImage.public_id,
-            channelName: normalizedChannelName,
             userName: normalizedUserName,
             email: normalizedEmail,
-            phone: phone,
             password: hashedPassword,
         });
 

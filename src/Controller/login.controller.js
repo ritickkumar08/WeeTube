@@ -17,7 +17,26 @@ const loginController = async (req, res) => {
         const normalizedEmail = email.toLowerCase().trim();
     
         //finding the user and explicity sending the password
-        const user = await User.findOne({ email: normalizedEmail }).select('+password')
+        const user = await User.findOne({ email: normalizedEmail })
+        .select('+password')
+        .populate({
+            path: "likedVideos",
+            populate: { path: "channel uploader", select: "channelName username avatar" },
+        })
+        .populate({
+            path: "dislikedVideos",
+            populate: { path: "channel uploader", select: "channelName username avatar" },
+        })
+        .populate("channel")
+        .populate("subscribedChannels")
+        .populate({
+            path: "watchLater",
+            populate: { path: "channel uploader", select: "channelName username avatar" },
+        })
+        .populate({
+            path: "watchHistory.video",
+            populate: { path: "channel uploader", select: "channelName username avatar" },
+        });
         // console.log(user);
 
         //we do NOT reveal which field was wrong
@@ -41,12 +60,7 @@ const loginController = async (req, res) => {
 
         //now creating the token including 
         const token = jwt.sign(
-            {   id: user._id, 
-                channelName: user.channelName,
-                email: user.email,
-                phone: user.phone,
-                logoId: user.logoId
-            },
+            {  id: user._id, },
             process.env.SECRET_KEY,
             { expiresIn : '10d' }
         )
@@ -57,13 +71,15 @@ const loginController = async (req, res) => {
             token,
             user:{
                 user: user._id,
-                channelName: user.channelName,
+                username: user.username,
                 email: user.email,
-                phone: user.phone,
-                logoUrl: user.logoUrl,
-                logoId: user.logoId,
-                subscribers: user.subscribers,
-                subscribedChannels: user.subscribedChannels
+                logo: user.logo,
+                likedVideos:user.likedVideos,
+                dislikedVideos:user.dislikedVideos,
+                watchHistory:user.watchHistory,
+                channel:user.channel,
+                subscribedChannels:user.subscribedChannels,
+                watchLater: user.watchLater
             }
         })
 
