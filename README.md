@@ -1,4 +1,8 @@
 # WeeTube
+github Repository :- https://github.com/ritickkumar08/WeeTube
+
+deployed on :- https://weetube.onrender.com
+
 
 🎥 WeeTube – Backend API
 
