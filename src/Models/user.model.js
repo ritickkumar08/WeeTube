@@ -9,13 +9,6 @@ const userSchema = new mongoose.Schema({
       maxlength: 30,
       default: ""
     },
-    channelName: {
-      type: String,
-      required: true, //and username will be compulsory
-      trim: true,  // Remove whitespace from both ends of the name string
-      minlength: 3,
-      maxlength: 30,
-    },
     email: {
       type: String,
       required: true,
@@ -23,27 +16,14 @@ const userSchema = new mongoose.Schema({
       lowercase: true, // Convert email to lowercase and remove whitespace for consistency
       trim: true, 
     },
-    phone:{
-      type: String,
-      minlength: 10,
-      maxlength: 10
-    },
     password: {
       type: String,
       required: true,
       select: false,  // Prevent password from being included in query results by default for security
     },
-    logoUrl: {
+    avatar: {
       type: String,
-      required: true,
-    },
-    logoId: {
-      type: String,
-      required: true,
-    },
-    subscribers:{
-      type: Number,
-      default: 0
+      default: "",
     },
     subscribedBy:[{
       type: mongoose.Schema.Types.ObjectId,

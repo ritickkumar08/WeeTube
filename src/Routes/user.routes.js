@@ -11,6 +11,7 @@ const userRouter = express.Router()
 userRouter.post('/signup', signupController)
 userRouter.post('/login', loginController)
 userRouter.post('/me',authMiddleware, myProfileController)
+
 userRouter.put('/subscribe/:id',authMiddleware, subscribeController)
 userRouter.put('/unsubscribe/:id',authMiddleware, unSubscribeController)
 

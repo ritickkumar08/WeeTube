@@ -11,11 +11,6 @@ const videoSchema = new mongoose.Schema({
         required: true,
         default: ""
     },
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
-    },
     videoUrl:{
         type: String,
         required: true
@@ -58,16 +53,16 @@ const videoSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
-    // channel: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "Channel", // The channel this video belongs to
-    //   required: true,
-    // },
-    // uploader: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "User", // The user who uploaded the video
-    //   required: true,
-    // },
+    channel: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Channel", // The channel this video belongs to
+      required: true,
+    },
+    uploader: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", // The user who uploaded the video
+      required: true,
+    },
     },
     {timestamps: true}
 )
