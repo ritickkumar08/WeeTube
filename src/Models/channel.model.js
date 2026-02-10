@@ -10,7 +10,7 @@ const channelSchema = new mongoose.Schema({
         type: String,
         defalut: ""
     },
-    banner:{
+    channelBanner:{
         type: String,
         default: ""
     },
@@ -18,7 +18,11 @@ const channelSchema = new mongoose.Schema({
         type: Number,
         default:0
     },
-    channelOwner:{
+    uniqueDeleteKey:{
+      type:String,
+      required:true,
+    },
+    owner:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true

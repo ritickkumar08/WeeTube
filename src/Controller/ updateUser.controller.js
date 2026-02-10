@@ -29,24 +29,20 @@ const updateUserController = async (req, res) => {
 
     // if user does not exist, return not found
     if (!updatedUser) {
-      return res.status(404).json({
-        message: "User not found",
-      });
+      return res.status(404).json({ message: "User not found", });
     }
 
     // sending updated user back to frontend
     res.status(200).json({
       message: "User updated successfully",
-      user: updatedUser,
+      user: updatedUser, 
     });
 
   } catch (err) {
     // logging error for debugging
     console.error(err);
     // generic server error response
-    res.status(500).json({
-      message: "Internal server error",
-    });
+    res.status(500).json({ message: "Internal server error", });
   }
 };
 

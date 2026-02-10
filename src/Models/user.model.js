@@ -30,6 +30,12 @@ const userSchema = new mongoose.Schema({
       ref: "User", // List of channels the user has subscribed to
       default: []
     }],
+
+    channel: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Channel", // Reference to the user's own channel
+      default: null,
+    },
     // Subscribed channels
     subscribedChannels: [
       {
