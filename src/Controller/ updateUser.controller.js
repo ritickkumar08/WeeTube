@@ -1,4 +1,4 @@
-import User from "../Models/userModel.js";
+import User from "../Models/user.model.js";
 
 const updateUserController = async (req, res) => {
   try {

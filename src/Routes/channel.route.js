@@ -1,6 +1,6 @@
 import express from 'express'
-import { createChannel, deleteChannel, getAllChannels, getChannelById, updateChannel } from '../Controller/channel.controller';
-import authMiddleware from '../middleWares/authMiddleware'
+import { createChannel, deleteChannel, getAllChannels, getChannelById, updateChannel } from '../Controller/channel.controller.js';
+import authMiddleware from '../middleWares/authMiddleware.js'
 
 const channelRouter = express.Router()
 

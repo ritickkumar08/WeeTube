@@ -1,6 +1,6 @@
-import User from "../Models/userModel.js";
-import Channel from "../Models/channelModel.js";
-import Video from "../Models/videoModel.js";
+import User from "../Models/user.model.js";
+import Channel from "../Models/channel.model.js";
+import Video from "../Models/video.model.js";
 
 const deleteUserController = async (req, res) => {
   try {

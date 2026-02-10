@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken'
 import User from '../Models/user.model.js'
 
 const subscribeController = async (req, res) => {

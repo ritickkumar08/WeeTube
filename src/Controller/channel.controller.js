@@ -1,7 +1,7 @@
-import Channel from "../Models/channelModel.js";
-import Video from "../Models/videoModel.js";
-import User from "../Models/userModel.js";
-import bcrypt from "bcryptjs";
+import Channel from "../Models/channel.model.js";
+import Video from "../Models/video.model.js";
+import User from "../Models/user.model.js";
+import bcrypt from "bcrypt";
 
 // CREATE CHANNEL CONTROLLER
 export const createChannel = async (req, res) => {

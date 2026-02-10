@@ -1,5 +1,5 @@
 import Video from '../Models/video.model.js'
-import Channel from '../Models/channel.model'
+import Channel from '../Models/channel.model.js'
 
 const ownerMiddleware = async (req, res, next) =>{
     try {

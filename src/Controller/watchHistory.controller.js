@@ -1,5 +1,5 @@
-import userModel from "../../models/userModel.js";
-import videoModel from "../../models/videoModel.js";
+import User from '../Models/user.model.js'
+import Video from '../Models/video.model.js';
 
 //  ADD / UPDATE WATCH HISTORY
 async function watchHistory(req, res) {
@@ -18,13 +18,11 @@ async function watchHistory(req, res) {
     }
 
     // fetching user from database
-    const user = await userModel.findById(id);
+    const user = await User.findById(id);
 
     // returning error if user does not exist
     if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-      });
+      return res.status(404).json({ message: "User not found" });
     }
 
     // checking if the video already exists in watch history
@@ -49,13 +47,13 @@ async function watchHistory(req, res) {
       await user.save();
 
       // incrementing video views only on first watch
-      await videoModel.findByIdAndUpdate(videoId, {
+      await Video.findByIdAndUpdate(videoId, {
         $inc: { views: 1 },
       });
     }
 
     // fetching full updated user with populated fields for frontend sync
-    const fullUser = await userModel.findById(id)
+    const fullUser = await User.findById(id)
       .populate({
         path: "likedVideos",
         populate: { path: "channel uploader", select: "channelName username avatar" },
@@ -82,14 +80,14 @@ async function watchHistory(req, res) {
       user: fullUser,
     });
 
-  } catch (error) {
+  } catch (err) {
     // logging error for debugging
-    console.error("Watch History Error:", error);
+    console.error("Watch History Error:", err);
 
     // sending server error response
     res.status(500).json({
       message: "Error updating watch history",
-      error: error.message,
+      error: err,
     });
   }
 }
@@ -113,7 +111,7 @@ async function removeFromWatchHistory(req, res) {
     }
 
     // removing the video entry from user's watch history
-    const updatedUser = await userModel.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       id,
       { $pull: { watchHistory: { video: videoId } } }, // removing matching video entry
       { new: true } // returning updated document
@@ -133,9 +131,7 @@ async function removeFromWatchHistory(req, res) {
 
     // returning error if user does not exist
     if (!updatedUser) {
-      return res.status(404).json({
-        message: "User not found",
-      });
+      return res.status(404).json({ message: "User not found", });
     }
 
     // sending success response with updated user
@@ -144,14 +140,14 @@ async function removeFromWatchHistory(req, res) {
       user: updatedUser,
     });
 
-  } catch (error) {
+  } catch (err) {
     // logging error for debugging
-    console.error("Remove Watch History Error:", error);
+    console.error("Remove Watch History Error:", err);
 
     // sending server error response
     res.status(500).json({
       message: "Error removing from watch history",
-      error: error.message,
+      error: err,
     });
   }
 }

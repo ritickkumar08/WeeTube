@@ -13,3 +13,6 @@ otherRouter.post('/subscribe', authMiddleware, subscribeController)
 otherRouter.post('/unsubscribe', unSubscribeController)
 otherRouter.post('/watchhistory', authMiddleware, watchHistory)
 otherRouter.delete('/watchhistory', authMiddleware, removeFromWatchHistory)
+
+
+export default otherRouter

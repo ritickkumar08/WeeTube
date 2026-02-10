@@ -1,4 +1,4 @@
-import { uploadController, updateVideoController, deleteVideoController, likeController, disLikeController, getAllVideos, getVideoById } from '../Controller/video.controller.js'
+import { uploadController, updateVideoController, deleteVideoController, getAllVideos, getVideoById } from '../Controller/video.controller.js'
 import ownerMiddleware from '../middleWares/ownerMiddleware.js'
 
 import express from 'express'

@@ -9,6 +9,7 @@ import userRoutes from './Routes/user.routes.js'
 import videoRouter from './Routes/video.route.js'
 import commentRouter from './Routes/comment.route.js'
 import channelRouter from './Routes/channel.route.js';
+import otherRouter from './Routes/other.route.js'
 
 import dotenv from 'dotenv'
 dotenv.config() //to configure the data in .env file to whole of the server or app.
@@ -26,7 +27,7 @@ app.use('/user', userRoutes)
 app.use('/video', videoRouter)
 app.use('/comment', commentRouter)
 app.use('/channel', channelRouter)
-app.use('/others', otherRoutes)
+app.use('/others', otherRouter)
 
 
 /* -------------------- Global Error Handler -------------------- */
