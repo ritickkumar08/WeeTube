@@ -2,7 +2,7 @@ import userModel from "../../models/userModel.js";
 import videoModel from "../../models/videoModel.js";
 
 //  ADD / UPDATE WATCH HISTORY
-async function setWatchHistory(req, res) {
+async function watchHistory(req, res) {
   try {
     // extracting video id from request body
     const { videoId } = req.body;
@@ -157,7 +157,7 @@ async function removeFromWatchHistory(req, res) {
 }
 
 // exporting controllers
-export default setWatchHistory;
+export default watchHistory;
 export { removeFromWatchHistory };
 
 
