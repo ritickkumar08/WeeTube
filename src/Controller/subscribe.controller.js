@@ -3,46 +3,65 @@ import User from '../Models/user.model.js'
 
 const subscribeController = async (req, res) => {
     try {
-        //gettint the token from the header and extracting the user details from the token
-        const token = req.headers.authorization.split(" ")[1];
-        if (!token) {
-            return res.status(401).json({ message: "No token provided" });
-        }
-        // Verify token
-        const verifiedUser = jwt.verify(token, process.env.SECRET_KEY);
-        // console.log(verifiedUser);
-        if (verifiedUser.id === req.params.id) {
-            return res.status(400).json({ message: "You cannot subscribe to yourself" });
+        const { channelId } = req.body;          // extracting channelId from request body
+        const { id } = req.user;                 // extracting logged-in user id from auth middleware
+
+        // preventing user from subscribing to their own channel
+        if (id === channelId) {
+        return res.status(400).json({
+            message: "You cannot subscribe to your own channel.",
+        });
         }
 
-        const channelTobeSubscribed = await User.findById(req.params.id)
-        // console.log(channelTobeSubscribed);
-        if (!channelTobeSubscribed) {
-            return res.status(404).json({ message: "Channel not found" });
+        const user = await User.findById(id); // fetching user from database
+        if (!user) {
+        return res.status(404).json({ message: "User not found" });
         }
 
-        //if already a subscriber
-        const alreadySubscribed = channelTobeSubscribed.subscribedBy.some(
-            id => id.toString() === verifiedUser.id
-        );
-        if (alreadySubscribed) {
-            return res.status(409).json({ message: "Already subscribed" });
+        // checking if the channel is already in subscribedChannels array
+        const isAlreadySubscribed = user.subscribedChannels.includes(channelId);
+
+        let update;           // mongo update query holder
+        let statusMessage;    // response message holder
+
+        if (isAlreadySubscribed) {
+        // unsubscribe case: removing channelId from subscribedChannels
+        update = { $pull: { subscribedChannels: channelId } };
+        statusMessage = "Channel removed from Subscription";
+        } else {
+        // subscribe case: adding channelId only if not already present
+        update = { $addToSet: { subscribedChannels: channelId } };
+        statusMessage = "Channel is subscribed";
         }
 
-        await Promise.all([
-            User.findByIdAndUpdate(
-                req.params.id,
-                { $inc: { subscribers: 1 },
-                $addToSet: { subscribedBy: verifiedUser.id } }
-            ),
-            User.findByIdAndUpdate(
-                verifiedUser.id,
-                { $addToSet: { subscribedChannels: req.params.id } }
-            )
-        ]);
+        // updating user and returning fresh populated user document
+        const updatedUser = await User
+        .findByIdAndUpdate(id, update, { new: true }) // applying subscription update
+        .populate({
+            path: "likedVideos",
+            populate: { path: "channel uploader", select: "channelName username avatar" },
+        }) // populating liked videos with channel & uploader
+        .populate({
+            path: "dislikedVideos",
+            populate: { path: "channel uploader", select: "channelName username avatar" },
+        }) // populating disliked videos with channel & uploader
+        .populate("channel") // populating user's own channel
+        .populate("subscribedChannels") // populating subscribed channels
+        .populate({
+            path: "watchLater",
+            populate: { path: "channel uploader", select: "channelName username avatar" },
+        }) // populating watch later videos
+        .populate({
+            path: "watchHistory.video",
+            populate: { path: "channel uploader", select: "channelName username avatar" },
+        }); // populating watch history videos
 
-    res.status(200).json({ message: "Subscribed" });
-        
+    // sending final response with subscription status and updated user
+    res.status(200).json({
+        message: statusMessage,
+        subscribed: !isAlreadySubscribed,
+        user: updatedUser,
+    }); 
     } catch (err) {
         console.log(err);
         return res.status(500).json({error: 'something went wrong'})

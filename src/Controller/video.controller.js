@@ -44,6 +44,7 @@ export const uploadController = async(req, res)=>{
         
         const newVideo = new Video({
             title,
+            tags,
             description,
             videoUrl,
             thumbnailUrl,
@@ -76,7 +77,7 @@ export const updateVideoController = async (req, res) => {
         // Find and update the video by ID
         const updatedVideo = await Video.findByIdAndUpdate(
             id,
-            { title, description, thumbnailUrl, category },
+            { title, description, thumbnailUrl, category,tags },
             { new: true }
         );
 

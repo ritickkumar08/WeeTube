@@ -4,7 +4,7 @@ import { addComment, allComments, editComment, deleteComment } from '../Controll
 import authMiddleware from '../middleWares/authMiddleware.js'
 
 
-const commentRouter = new express.Router()
+const commentRouter = express.Router()
 
 // Add a new comment
 commentRouter.post('/new-comment/:id', authMiddleware, addComment)
