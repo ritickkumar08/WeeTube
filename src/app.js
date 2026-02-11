@@ -29,6 +29,9 @@ app.use('/comment', commentRouter)
 app.use('/channel', channelRouter)
 app.use('/others', otherRouter)
 
+app.get('/',(req,res)=>{
+  res.send('a happy start')
+})
 
 /* -------------------- Global Error Handler -------------------- */
 //This middleware handles errors. that are not because of the users but something broke internally
