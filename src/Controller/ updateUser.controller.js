@@ -3,7 +3,7 @@ import User from "../Models/user.model.js";
 const updateUserController = async (req, res) => {
   try {
     // extracting allowed fields from request body
-    const { username, email, logo } = req.body;
+    const { userName, email, logo } = req.body;
 
     // getting authenticated user id from auth middleware
     const userId = req.user.id;
@@ -11,7 +11,7 @@ const updateUserController = async (req, res) => {
     // object to store only fields that need to be updated
     const updates = {};
     // if username is sent, add it to update object
-    if (username) updates.username = username;
+    if (userName) updates.userName = userName;
     // if email is sent, add it to update object
     if (email) updates.email = email;
     // if avatar url is sent, update avatar url

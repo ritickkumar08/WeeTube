@@ -11,7 +11,7 @@ const userRouter = express.Router()
 
 userRouter.post('/signup', signupController)
 userRouter.post('/login', loginController)
-userRouter.post('/me',authMiddleware, myProfileController)
+userRouter.get('/me',authMiddleware, myProfileController)
 userRouter.put("/update", authMiddleware, updateUserController);
 userRouter.delete("/delete", authMiddleware, deleteUserController);
 
