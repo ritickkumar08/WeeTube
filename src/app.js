@@ -3,25 +3,28 @@
 // route mounting
 // global error handler
 import express from 'express'
-import fileUpload from "express-fileupload";
-
 import userRoutes from './Routes/user.routes.js'
 import videoRouter from './Routes/video.route.js'
 import commentRouter from './Routes/comment.route.js'
 import channelRouter from './Routes/channel.route.js';
 import otherRouter from './Routes/other.route.js'
-
+import cors from "cors";
 import dotenv from 'dotenv'
+
+
 dotenv.config() //to configure the data in .env file to whole of the server or app.
 const app = express()
+
+//use cors middleware
+const allowedOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+
+app.use(cors({
+  origin: allowedOrigin,
+  methods: ['GET','POST','PUT','DELETE','PATCH','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization'],
+  credentials: true,
+}));
 app.use(express.json()) //a built-in middleware to convert the responses to json format to understand.
-// file upload middleware
-app.use(fileUpload({
-    limits: { fileSize: 100 * 1024 * 1024 }, // 100MB
-    useTempFiles: true,
-    tempFileDir: "/tmp/",
-  })
-);
 
 app.use('/user', userRoutes)
 app.use('/video', videoRouter)

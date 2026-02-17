@@ -1,18 +1,8 @@
 import Video from '../Models/video.model.js';
 import Comment from '../Models/comment.model.js'
-import jwt from 'jsonwebtoken'
 
 export const addComment = async (req, res) => {
     try {
-        // Safely extract token from Authorization header
-        const token = req.headers.authorization.split(" ")[1];
-        // Reject request if token is missing
-        if (!token) {
-            return res.status(401).json({ message: "No token provided" });
-        }
-        // // Verify JWT and extract user payload
-        const verifiedUser = jwt.verify(token, process.env.SECRET_KEY);   
-        
         // Validate comment text
         if (!req.body.commentText || !req.body.commentText.trim()) {
             return res.status(400).json({ message: "Comment text is required" });
@@ -26,7 +16,7 @@ export const addComment = async (req, res) => {
 
         const newComment = new Comment({
             videoId: req.params.id,
-            userId: verifiedUser.id,
+            userId: req.user._id,
             commentText: req.body.commentText.trim()
         })
         const comment = await newComment.save()
@@ -71,23 +61,6 @@ export const allComments = async (req,res) => {
 //to edit the comment
 export const editComment = async (req, res) => {
     try {
-        // Safely extract Authorization header
-        const authHeader = req.headers.authorization
-        // Reject if Authorization header is missing
-        if (!authHeader) {
-            return res.status(401).json({ message: "Authorization header missing" })
-        }
-
-        // Safely extract token from Authorization header
-        const token = authHeader.split(" ")[1]
-        // Reject request if token is missing
-        if (!token) {
-            return res.status(401).json({ message: "No token provided" })
-        }
-        // // Verify JWT and extract user payload
-        const verifiedUser = jwt.verify(token, process.env.SECRET_KEY); 
-        // console.log(verifiedUser);
-
         // Extract new comment text from request body
         const { commentText } = req.body;
         // Validate comment text
@@ -104,7 +77,7 @@ export const editComment = async (req, res) => {
         }
             
          // Ensure only the comment owner can edit
-        if (comment.userId.toString() !== verifiedUser.id) {
+        if (comment.userId.toString() !== req.user._id.toString()) {
             return res.status(403).json({ message: "You are not allowed to edit this comment" });
         }
 
@@ -124,23 +97,6 @@ export const editComment = async (req, res) => {
 //to delete the comment
 export const deleteComment = async (req, res) => {
     try {
-        // Safely extract Authorization header
-        const authHeader = req.headers.authorization
-        // Reject if Authorization header is missing
-        if (!authHeader) {
-            return res.status(401).json({ message: "Authorization header missing" })
-        }
-
-        // Safely extract token from Authorization header
-        const token = authHeader.split(" ")[1]
-        // Reject request if token is missing
-        if (!token) {
-            return res.status(401).json({ message: "No token provided" })
-        }
-        // // Verify JWT and extract user payload
-        const verifiedUser = jwt.verify(token, process.env.SECRET_KEY); 
-        // console.log(verifiedUser);
-
         // Fetch the comment to be edited
         const comment = await Comment.findById(req.params.id);
         // console.log(comment);
@@ -150,14 +106,14 @@ export const deleteComment = async (req, res) => {
         }
             
          // Ensure only the comment owner can edit
-        if (comment.userId.toString() !== verifiedUser.id) {
+        if (comment.userId.toString() !== req.user._id.toString()) {
             return res.status(403).json({ message: "You are not allowed to delete this comment" });
         }
 
-        // delete comment text
+        // delete comment
         await Comment.findByIdAndDelete(req.params.id)
         
-        res.status(200).json({message: "Comment deleted successfully", updatedComment})
+        res.status(200).json({message: "Comment deleted successfully"})
     } catch (err) {
         console.log(err);
         //clean error response to client

@@ -1,48 +1,47 @@
-import jwt from 'jsonwebtoken'
 import User from '../Models/user.model.js'
+import Channel from '../Models/channel.model.js'
 
 const unSubscribeController = async (req, res) => {
     try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader) {
-            return res.status(401).json({ message: "No token provided" });
-        }
-        //gettint the token from the header and extracting the user details from the token
-        const token = authHeader.split(" ")[1];
-        if (!token) {
-            return res.status(401).json({ message: "No token provided" });
-        }
-        // Verify token
-        const verifiedUser = jwt.verify(token, process.env.SECRET_KEY);
+        const userId = req.user._id;
+        const { id: channelId } = req.params;
 
-        //checking if the channel actually exists
-        const channelTobeunSubscribed = await User.findById(req.params.id)
-        // console.log(channelTobeSubscribed);
-        if (!channelTobeunSubscribed) {
+        // Check if channel exists
+        const channelToBeUnsubscribed = await Channel.findById(channelId);
+        if (!channelToBeUnsubscribed) {
             return res.status(404).json({ message: "Channel not found" });
         }
 
-        //if already a subscriber
-        const isSubscribed = channel.subscribedBy.some(
-            id => id.toString() === verifiedUser.id
+        // Check if user is actually subscribed
+        const isSubscribed = channelToBeUnsubscribed.subscribedBy.some(
+            (subscriberId) => subscriberId.toString() === userId.toString()
         );
 
         if (!isSubscribed) {
             return res.status(400).json({ message: "You are not subscribed" });
         }
 
-        //decreasing the subscribers count
-        channelTobeunSubscribed.subscribers = Math.max(0, channel.subscribers - 1);
-        await channel.save();
+        // Decrease subscribers count and remove user from subscribedBy
+        channelToBeUnsubscribed.subscribers = Math.max(0, channelToBeUnsubscribed.subscribers - 1);
+        channelToBeUnsubscribed.subscribedBy = channelToBeUnsubscribed.subscribedBy.filter(
+            (subscriberId) => subscriberId.toString() !== userId.toString()
+        );
+        await channelToBeUnsubscribed.save();
 
-        channelTobeunSubscribed.subscribedBy = channelTobeunSubscribed.subscribedBy.filter(userId => userId.toString() != verifiedUser.id)
-        await channelTobeunSubscribed.save()
-        //the user who is unsubscribing
-        const userFullInformation = await User.findById(verifiedUser.id)
-        userFullInformation.subscribedChannels = userFullInformation.subscribedChannels.filter(userId => userId.toString() != channelTobeunSubscribed.id)
-        await userFullInformation.save()
+        // Remove channel from user's subscribedChannels
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $pull: { subscribedChannels: channelId } },
+            { new: true }
+        )
+          .populate("likedVideos")
+          .populate("dislikedVideos")
+          .populate("channel")
+          .populate("subscribedChannels")
+          .populate("watchLater")
+          .populate("watchHistory.video");
 
-        res.status(200).json({ message: "unSubscribed" });       
+        res.status(200).json({ message: "Unsubscribed", user: updatedUser });       
     } catch (err) {
         console.log(err);
         return res.status(500).json({error: 'something went wrong'})

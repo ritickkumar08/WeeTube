@@ -4,7 +4,7 @@ import Video from '../Models/video.model.js'
 const likeController = async (req, res) => {
   try {
     const { videoId } = req.body;
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     // 1. validate video
     const video = await Video.findById(videoId);
@@ -42,7 +42,19 @@ const likeController = async (req, res) => {
 
     await Video.findByIdAndUpdate(videoId, videoUpdate);
 
-    return res.status(200).json({ message: isLiked ? "Like removed" : "Video liked" });
+    // return updated user for frontend sync
+    const updatedUser = await User.findById(userId)
+      .populate("likedVideos")
+      .populate("dislikedVideos")
+      .populate("channel")
+      .populate("subscribedChannels")
+      .populate("watchLater")
+      .populate("watchHistory.video");
+
+    return res.status(200).json({
+      message: isLiked ? "Like removed" : "Video liked",
+      user: updatedUser,
+    });
   } catch (err) {
     return res.status(500).json({
       message: "Like toggle failed",
@@ -59,7 +71,7 @@ export const dislikeController = async (req, res) => {
     const { videoId } = req.body;
 
     // extracting logged-in user id from auth middleware
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     // validating that the video exists
     const video = await Video.findById(videoId);
@@ -106,9 +118,19 @@ export const dislikeController = async (req, res) => {
     // applying video counter update
     await Video.findByIdAndUpdate(videoId, videoUpdate);
 
+    // return updated user for frontend sync
+    const updatedUser = await User.findById(userId)
+      .populate("likedVideos")
+      .populate("dislikedVideos")
+      .populate("channel")
+      .populate("subscribedChannels")
+      .populate("watchLater")
+      .populate("watchHistory.video");
+
     // sending final response
     return res.status(200).json({
       message: isDisliked ? "Dislike removed" : "Video disliked",
+      user: updatedUser,
     });
   } catch (err) {
     // handling unexpected server errors

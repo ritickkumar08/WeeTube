@@ -8,7 +8,7 @@ async function watchHistory(req, res) {
     const { videoId } = req.body;
 
     // extracting authenticated user id from auth middleware
-    const { id } = req.user;
+    const id = req.user._id;
 
     // validating video id presence
     if (!videoId) {

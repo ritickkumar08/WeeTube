@@ -3,7 +3,7 @@ import User from '../Models/user.model.js'
 const subscribeController = async (req, res) => {
     try {
         const { channelId } = req.body;          // extracting channelId from request body
-        const { id } = req.user;                 // extracting logged-in user id from auth middleware
+        const id = req.user._id.toString();      // extracting logged-in user id from auth middleware
 
         // preventing user from subscribing to their own channel
         if (id === channelId) {

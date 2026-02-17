@@ -40,7 +40,7 @@ const ownerMiddleware = async (req, res, next) =>{
     // passing control to next middleware/controller
     next();
     } catch (err) {
-        res.status(500).json({ message: "Server Error during ownership check", error: error.message });
+        res.status(500).json({ message: "Server Error during ownership check", error: err.message });
     }
 }
 

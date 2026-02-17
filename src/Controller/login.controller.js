@@ -69,24 +69,13 @@ const loginController = async (req, res) => {
         res.status(200).json({
             message: 'succesfully logged In',
             token,
-            user:{
-                user: user._id,
-                username: user.userName,
-                email: user.email,
-                logo: user.logo,
-                likedVideos:user.likedVideos,
-                dislikedVideos:user.dislikedVideos,
-                watchHistory:user.watchHistory,
-                channel:user.channel,
-                subscribedChannels:user.subscribedChannels,
-                watchLater: user.watchLater
-            }
+            user
         })
 
     } catch (err) {
         //a over all catch for all and any errors we get during try block.
         console.log("Login error:", err);
-        res.status(500).json({error: err})
+        res.status(500).json({ message: "Login failed" })
     }
 }
 
