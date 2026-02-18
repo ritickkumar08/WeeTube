@@ -20,6 +20,7 @@ export const addComment = async (req, res) => {
             commentText: req.body.commentText.trim()
         })
         const comment = await newComment.save()
+        await comment.populate("userId", "userName avatar channel");
 
         res.status(200).json({newComment: comment, message: 'comment added'})
     } catch (err) {
@@ -45,7 +46,7 @@ export const allComments = async (req,res) => {
         // Fetch comments related to the video
         const comments = await Comment.find({ videoId })
         // Populate limited user info for each comment
-        .populate("userId", "channelName logoUrl")
+        .populate("userId", "userName avatar channel")
         // Sort comments by newest first
         .sort({ createdAt: -1 });
         
@@ -85,6 +86,7 @@ export const editComment = async (req, res) => {
         comment.commentText = commentText.trim();
         // Save updated comment
         const updatedComment = await comment.save();
+        await updatedComment.populate("userId", "userName avatar channel");
 
         res.status(200).json({message: "Comment updated successfully", updatedComment})
     } catch (err) {

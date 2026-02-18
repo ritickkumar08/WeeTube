@@ -10,7 +10,7 @@ export const createChannel = async (req, res) => {
     const { channelName, description, channelBanner, uniqueDeleteKey } = req.body;
 
     // getting authenticated user id from auth middleware
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     // validating channel name
     if (!channelName) {
@@ -51,7 +51,11 @@ export const createChannel = async (req, res) => {
 
   } catch (err) {
     // handling server errors
-    res.status(500).json({ message: "Error creating channel", error: err });
+    console.error("Error creating channel:", err);
+    res.status(500).json({ 
+      message: "Error creating channel", 
+      error: err.message || "Internal server error" 
+    });
   }
 };
 
@@ -121,7 +125,7 @@ export const deleteChannel = async (req, res) => {
     const { uniqueDeleteKey } = req.body;
 
     // getting authenticated user id
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     // fetching channel from database
     const channel = await Channel.findById(id);
@@ -132,7 +136,7 @@ export const deleteChannel = async (req, res) => {
     }
 
     // checking channel ownership
-    if (channel.owner.toString() !== userId) {
+    if (channel.owner.toString() !== userId.toString()) {
       return res.status(403).json({ message: "You are not authorized to delete this channel" });
     }
 
@@ -169,7 +173,7 @@ export const updateChannel = async (req, res) => {
     const { channelName, description, channelBanner } = req.body;
 
     // getting authenticated user id
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     // fetching channel from database
     const channel = await Channel.findById(id);
@@ -180,7 +184,7 @@ export const updateChannel = async (req, res) => {
     }
 
     // checking ownership before updating
-    if (channel.owner.toString() !== userId) {
+    if (channel.owner.toString() !== userId.toString()) {
       return res.status(403).json({ message: "You are not authorized to update this channel" });
     }
 
