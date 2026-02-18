@@ -15,15 +15,29 @@ import dotenv from 'dotenv'
 dotenv.config() //to configure the data in .env file to whole of the server or app.
 const app = express()
 
-//use cors middleware
-const allowedOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+// CORS: set on every response so they're never missing (Render, errors, etc.)
+app.use((req, res, next) => {
+  const origin = req.headers.origin
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+  }
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,PATCH,OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept,X-Requested-With')
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end()
+  }
+  next()
+})
 
 app.use(cors({
-  origin: allowedOrigin,
-  methods: ['GET','POST','PUT','DELETE','PATCH','OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization'],
+  origin: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
   credentials: true,
-}));
+  optionsSuccessStatus: 204,
+}))
+
 app.use(express.json()) //a built-in middleware to convert the responses to json format to understand.
 
 app.use('/user', userRoutes)
@@ -32,8 +46,13 @@ app.use('/comment', commentRouter)
 app.use('/channel', channelRouter)
 app.use('/others', otherRouter)
 
-app.get('/',(req,res)=>{
+app.get('/', (req, res) => {
   res.send('a happy start')
+})
+
+// So you can confirm deployed app has latest CORS: open in browser and check Response Headers for Access-Control-Allow-Origin
+app.get('/health', (req, res) => {
+  res.json({ ok: true, cors: true })
 })
 
 /* -------------------- Global Error Handler -------------------- */
