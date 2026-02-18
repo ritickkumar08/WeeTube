@@ -5,7 +5,7 @@ import authMiddleware from '../middleWares/authMiddleware.js'
 const channelRouter = express.Router()
 
 //accessible without any authrization
-channelRouter.use('/', getAllChannels)
+channelRouter.get('/', getAllChannels)
 channelRouter.get("/:id", getChannelById);
 
 // Protected routes
