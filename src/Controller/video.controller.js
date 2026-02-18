@@ -42,20 +42,36 @@ export const uploadController = async(req, res)=>{
         // console.log("video",uploadedVideo);
         // console.log("picture",uploadedThumbnail);
         
+        if (!title || String(title).trim().length < 3) {
+            return res.status(400).json({ message: "Title must be at least 3 characters" });
+        }
+        if (!videoUrl || !String(videoUrl).trim()) {
+            return res.status(400).json({ message: "Video URL is required" });
+        }
+        if (!thumbnailUrl || !String(thumbnailUrl).trim()) {
+            return res.status(400).json({ message: "Thumbnail URL is required" });
+        }
+
+        const normalizedTags = Array.isArray(tags)
+            ? tags
+            : (typeof tags === "string" && tags.trim()
+                ? tags.split(",").map((t) => t.trim()).filter(Boolean)
+                : []);
+
         const newVideo = new Video({
-            title,
-            tags,
-            description,
-            videoUrl,
-            thumbnailUrl,
-            category,
+            title: String(title).trim(),
+            tags: normalizedTags,
+            description: typeof description === "string" ? description : "",
+            videoUrl: String(videoUrl).trim(),
+            thumbnailUrl: String(thumbnailUrl).trim(),
+            category: typeof category === "string" ? category.trim() : "",
             channel: req.channelId,
             uploader: userId,
         })
 
         const newUploadedVideo =  await newVideo.save()
 
-        res.status(200).json({newVideo: newUploadedVideo})
+        res.status(201).json({newVideo: newUploadedVideo})
         // const {title, description, videoUrl,}
     } catch (err) {
         console.log(err);

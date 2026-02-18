@@ -4,7 +4,10 @@ import Channel from '../Models/channel.model.js'
 const ownerMiddleware = async (req, res, next) =>{
     try {
         // extracting authenticated user id and normalizing it to string
-    const userId = req.user.id.toString();
+    const userId = req.user?._id?.toString?.() || req.user?.id?.toString?.();
+    if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
 
     // checking if request has a video id (update / delete case)
     if (req.params.id) {
